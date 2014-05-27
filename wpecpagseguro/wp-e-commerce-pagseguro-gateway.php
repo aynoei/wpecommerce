@@ -5,7 +5,7 @@
  * Description: Ofereça PagSeguro em seu e-commerce e receba pagamentos por cartão de crédito, transferência bancária e boleto.
  * Author: PagSeguro Internet LTDA.
  * Author URI: https://pagseguro.uol.com.br
- * Version: 1.1
+ * Version: 1.2
  */
 
 /*

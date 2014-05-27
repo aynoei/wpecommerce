@@ -75,7 +75,7 @@ class checkout extends wpsc_merchant
         $this->_pagSeguroPaymentRequestObject = $this->generatePagSeguroPaymentRequestObject();
         $this->_pagSeguroPaymentRequestObject->setReference($wpsc_cart->log_id);
         $this->performPagSeguroRequest($this->_pagSeguroPaymentRequestObject);
-
+		
         if ($this->_urlPagSeguro != '')
             $this->redirect();
         else
@@ -190,7 +190,7 @@ class checkout extends wpsc_merchant
             $item->setDescription($product->product_name);
             $item->setQuantity($product->quantity);
             $item->setAmount($product->unit_price);
-            $item->setWeight($product->weight * 1000);
+            $item->setWeight(round($product->weight * 1000));
             array_push($pagSeguroItems, $item);
         }
         return $pagSeguroItems;
@@ -205,7 +205,7 @@ class checkout extends wpsc_merchant
         $sender = new PagSeguroSender();
         $sender->setEmail(str_replace(" ", "", $this->_infoItem->userinfo['billingemail']['value']));
         $sender->setName($this->_infoItem->userinfo['billingfirstname']['value'] . ' ' . $this->_infoItem->userinfo['billinglastname']['value']);
-        $sender->setPhone(substr($this->_infoItem->userinfo['billingphone']['value'], 0, 2), substr($this->_infoItem->userinfo['billingphone']['value'], 2));
+        $sender->setPhone($this->treatPhone($this->_infoItem->userinfo['billingphone']['value']));
         return $sender;
     }
 
@@ -270,13 +270,16 @@ class checkout extends wpsc_merchant
      */
     function performPagSeguroRequest(PagSeguroPaymentRequest $paymentRequest)
     {
-
+		
         $this->_credential = new PagSeguroAccountCredentials(get_option('ps_email'), get_option('ps_token'));
+		$credentials = $this->_credential;
+		
         try {
-            $this->_urlPagSeguro = $paymentRequest->register($this->_credential);
+            $this->_urlPagSeguro = $paymentRequest->register($credentials);
         } catch (Exception $exc) {
             $this->_urlPagSeguro = '';
         }
+
     }
 
     /**
@@ -300,5 +303,26 @@ class checkout extends wpsc_merchant
         $this->return_to_checkout();
         exit();
     }
+	
+	/**
+	 * Treatment for PhoneNumber
+	 * @return $phoneNumber;
+	 */
+	 function treatPhone($num)
+	 {
+	 	
+	 	$newNum = floatval(preg_replace('/[^A-Za-z0-9]/', "", $num));
+		
+		if ($newNum[0] == 0)
+		{			
+			$newNum = ltrim($newNum, "0");
+		}
+		
+		return (int)$newNum;
+		
+	 }
+	
 }
+
+
 ?>

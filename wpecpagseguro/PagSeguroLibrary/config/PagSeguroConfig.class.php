@@ -1,7 +1,7 @@
 <?php
 
 /*
- ************************************************************************
+ * ***********************************************************************
  Copyright [2011] [PagSeguro Internet Ltda.]
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,26 +15,30 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- ************************************************************************
+ * ***********************************************************************
  */
 
 /*
  * Provides a means to retrieve configuration preferences.
  * These preferences can come from the default config file (PagSeguroLibrary/config/PagSeguroConfig.php).
  */
+
 class PagSeguroConfig
 {
 
     private static $config;
     private static $data;
+
     const VARNAME = 'PagSeguroConfig';
 
     private function __construct()
     {
         define('ALLOW_PAGSEGURO_CONFIG', true);
-        require_once PagSeguroLibrary::getPath()
-        . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "PagSeguroConfig.php";
+
+        require_once PagSeguroLibrary::getPath() .
+            DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "PagSeguroConfig.php";
         $varName = self::VARNAME;
+
         if (isset($$varName)) {
             self::$data = $$varName;
             unset($$varName);
@@ -48,6 +52,7 @@ class PagSeguroConfig
         if (self::$config == null) {
             self::$config = new PagSeguroConfig();
         }
+
         return self::$config;
     }
 
@@ -79,8 +84,9 @@ class PagSeguroConfig
 
     public static function getAccountCredentials()
     {
-        if (isset(self::$data['credentials']) && isset(self::$data['credentials']['email'])
-            && isset(self::$data['credentials']['token'])
+        if (isset(self::$data['credentials']) &&
+            isset(self::$data['credentials']['email']) &&
+            isset(self::$data['credentials']['token'])
         ) {
             return new PagSeguroAccountCredentials(
                 self::$data['credentials']['email'],
@@ -117,7 +123,7 @@ class PagSeguroConfig
     public static function logIsActive()
     {
         if (isset(self::$data['log']) && isset(self::$data['log']['active'])) {
-            return (bool)self::$data['log']['active'];
+            return (bool) self::$data['log']['active'];
         } else {
             throw new Exception("Log activation flag not set.");
         }
@@ -137,5 +143,40 @@ class PagSeguroConfig
         } else {
             throw new Exception("Log file location not set.");
         }
+    }
+
+    /**
+     * Validate if the requirements are enable for use correct of the PagSeguro
+     * @return array
+     */
+    public static function validateRequirements()
+    {
+
+        $requirements = array(
+            'version' => '',
+            'spl' => '',
+            'curl' => '',
+            'dom' => ''
+        );
+
+        $version = str_replace('.', '', phpversion());
+
+        if ($version < 516) {
+            $requirements['version'] = 'PagSeguroLibrary: PHP version 5.1.6 or greater is required.';
+        }
+
+        if (!function_exists('spl_autoload_register')) {
+            $requirements['spl'] = 'PagSeguroLibrary: Standard PHP Library (SPL) is required.';
+        }
+
+        if (!function_exists('curl_init')) {
+            $requirements['curl'] = 'PagSeguroLibrary: cURL library is required.';
+        }
+
+        if (!class_exists('DOMDocument')) {
+            $requirements['dom'] = 'PagSeguroLibrary: DOM XML extension is required.';
+        }
+
+        return $requirements;
     }
 }
