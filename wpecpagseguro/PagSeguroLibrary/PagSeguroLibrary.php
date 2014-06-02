@@ -20,9 +20,7 @@
 
 /*
  * PagSeguro Library Class
- * Version: 2.1.9
- * Date: 22/10/2013
- */
+  */
 class PagSeguroLibrary
 {
 

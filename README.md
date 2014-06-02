@@ -17,7 +17,7 @@ Requisitos
 
 - [WordPress] 3.5.2
 - [WPeCommerce] 3.8.12.1
-- [PHP] 5.1.6+
+- [PHP] 5.3.3+
 - [SPL]
 - [cURL]
 - [DOM]
@@ -50,6 +50,9 @@ Para configurar o módulo acesse, na área administrativa de seu WordPress, o me
 Changelog
 ---------
 ---
+1.2
+- Removendo máscara de telefone antes de fazer o POST para o PagSeguro
+
 1.1
 - Correção: cannot re-assign auto-global variable _POST
 
