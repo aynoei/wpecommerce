@@ -42,3 +42,9 @@ xmlrpc.php
 #################
 .sonar/
 sonar-project.properties
+
+#################
+## IntelliJ
+#################
+.idea/
+*.iml
